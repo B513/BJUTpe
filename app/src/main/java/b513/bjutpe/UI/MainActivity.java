@@ -26,13 +26,18 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+	//界面组件
 	TextView tvError,tvGetVcode,tvLogcat;
 	EditText etUname,etPasswd,etVcode;
 	ImageView ibVcode;
 	Button btnLogin;
-	
+	//登录前后的cookie。前者可能无用。
 	List<Cookie> cookieso,cookiesp;
 	
+	/* 登录按钮按下时触发
+	 * 这种格式的函数都嫑直接更改名字和参数
+	 * 要和xml里相应控件的onClick属性一致
+	 */
 	public void onLoginButtonClicked(View v){
 		String uname=etUname.getText().toString();
 		String passwd=etPasswd.getText().toString();
@@ -47,19 +52,24 @@ public class MainActivity extends AppCompatActivity {
 			showError("请填写验证码");
 			return;
 		}
+		//让错误提示文本消失
 		tvError.setVisibility(View.GONE);
+		//开启后台登录任务
 		new LoginTask(uname,passwd,vcode,null).execute();
 	}
 	
+	//获取验证码按钮被点击
 	public void onGetVcodeButtonClicked(View v){
+		//开启后台获取验证码任务
 		new GetVcodeTask().execute();
 	}
 	
-    @Override
+    @Override//Activity创建时触发
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 		
+		//初始化界面组件指针
 		tvGetVcode=(TextView) findViewById(R.id.main_tvgetvcode);
 		etUname=(EditText) findViewById(R.id.main_etUsername);
 		etPasswd=(EditText) findViewById(R.id.main_etPassword);
@@ -71,34 +81,40 @@ public class MainActivity extends AppCompatActivity {
 		//
     }
 	
+	//打印一条消息，在调试用的显示框
 	private void log(String s){
 		tvLogcat.append(">>> ");
 		tvLogcat.append(s);
 		tvLogcat.append("\n");
 	}
 	
+	//显示登录错误，比如没输密码
 	private void showError(String err){
 		tvError.setVisibility(View.VISIBLE);
 		tvError.setText(err);
 	}
 	
+	//后台登录任务类
 	class LoginTask extends AsyncTask<Void,Void,String> {
+		
 		private String uname,passwd,vcode,cookie;
+		
 		public LoginTask(String uname,String passwd,String vcode,String cookie){
 			this.uname=uname;this.passwd=passwd;
 			this.vcode=vcode;this.cookie=cookie;
 		}
 
-		@Override
+		@Override//预处理
 		protected void onPreExecute() {
-			// TODO: Implement this method
 			super.onPreExecute();
+			//禁止用户再点击按钮，并显示正在登录
 			MainActivity.this.ibVcode.setEnabled(false);
 			MainActivity.this.tvGetVcode.setEnabled(false);
 			MainActivity.this.btnLogin.setEnabled(false);
 			MainActivity.this.btnLogin.setText("登录中...");
 		}
-		@Override
+		
+		@Override//后处理，重新允许使用按钮
 		protected void onPostExecute(String result) {
 			// TODO: Implement this method
 			super.onPostExecute(result);
@@ -107,14 +123,16 @@ public class MainActivity extends AppCompatActivity {
 			MainActivity.this.btnLogin.setEnabled(true);
 			MainActivity.this.btnLogin.setText("登录");
 		}
-		@Override
+		
+		@Override//在后台登录
 		protected String doInBackground(Void[] p1) {
-			// TODO: Implement this method
-			/*try {
+			/*try {让用户等待一秒钟，将时间续给长者
+			(其实是为了测试)
 				Thread.currentThread().sleep(1000);
 			}
 			catch(InterruptedException e) {}*/
 			Cookie coo=null;
+			//从Cookie列表里找出JSESSIONID，不区分大小写
 			for(Cookie co:cookieso){
 				if(co.name().toLowerCase().equals("jsessionid")){
 					coo=co;
@@ -122,11 +140,35 @@ public class MainActivity extends AppCompatActivity {
 				}
 			}
 			if(coo==null){
+				//如果没有，那可真是日了狗了
 				return "0";
 			}
 			
+			/* OkHttp大量采用Builder这一概念进行类
+			  * 实例的创建和设置。体会这样做的方便
+			  * 原本是
+			  * A a=new A(xx,xx);
+			  * a.setXx(xx);
+			  * 或者
+			  * A a=new A();
+			  * a.setXx(xx);
+			  * a.setXx(xx);
+			  * 对于一些需要参数多的类，
+			  * 内部实现和外部调用都会麻烦。
+			  * 现在的格式是
+			  * A a=new A.Builder()
+			  * .xx(xx)
+			  * .xx(xx)
+			  * .build();
+			  * 最开始可能不习惯，适应了会发现真的好用。
+			  */
 			OkHttpClient hc=new OkHttpClient.Builder()
 				.cookieJar(new CookieJar(){
+					/* CookieJar用来定义Http客户端对cookie的加载
+					 * 和得到cookie后的操作。这里登录时需要提交co
+					 * kie，登录后需要保留新的cookie，以便后续使
+					 * 用。
+					 */
 					@Override
 					public void saveFromResponse(HttpUrl p1,List<Cookie> p2) {
 						cookiesp=p2;
@@ -137,16 +179,16 @@ public class MainActivity extends AppCompatActivity {
 					}
 				})
 				.build();
-			FormBody fb=new FormBody.Builder()
+			FormBody fb=new FormBody.Builder()//表单数据
 			.add("username",uname)
 			.add("userpwd",passwd)
 			.add("code",vcode)
 			.build();
-			Request req=new Request.Builder()
+			Request req=new Request.Builder()//创建POST请求
 				.url("http://eol.bjut.edu.cn/Login.do;"+coo.name()+"="+coo.value())
 				.post(fb)
 				.build();
-			Response res;
+			Response res;//准备接收响应
 			try {
 				res=hc.newCall(req).execute();
 				String data=res.body().string();
@@ -162,6 +204,9 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 	
+	/* 习题0.0: 这是后台获取验证码的类，请仿照上面的例子，
+	  * 为这段代码写注释。
+	  */
 	class GetVcodeTask extends AsyncTask<Void,Void,String> {
 		private boolean gotBmp;
 		private Bitmap bmp;
@@ -170,7 +215,6 @@ public class MainActivity extends AppCompatActivity {
 		}
 		@Override
 		protected void onPreExecute() {
-			// TODO: Implement this method
 			super.onPreExecute();
 			MainActivity.this.btnLogin.setEnabled(false);
 			MainActivity.this.ibVcode.setEnabled(false);
