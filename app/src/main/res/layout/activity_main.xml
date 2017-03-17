@@ -25,7 +25,23 @@
 			android:id="@+id/main_etUsername"
 			android:layout_width="0dp"
 			android:layout_height="match_parent"
-			android:layout_weight="0.8"/>
+			android:layout_weight="0.6"
+			android:inputType="number"/>
+
+		<ImageButton
+			style="?android:attr/buttonBarButtonStyle"
+			android:layout_height="match_parent"
+			android:layout_width="0dp"
+			android:src="@android:drawable/ic_menu_close_clear_cancel"
+			android:layout_weight="0.1"
+			android:onClick="onClearEtsButtonClicked"/>
+
+		<ImageButton
+			style="?android:attr/buttonBarButtonStyle"
+			android:layout_height="match_parent"
+			android:layout_width="0dp"
+			android:src="@android:drawable/ic_menu_close_clear_cancel"
+			android:layout_weight="0.1"/>
 
 	</LinearLayout>
 
@@ -45,7 +61,16 @@
 			android:id="@+id/main_etPassword"
 			android:layout_width="0dp"
 			android:layout_height="match_parent"
-			android:layout_weight="0.8"/>
+			android:layout_weight="0.7"
+			android:inputType="textPassword"/>
+
+		<ImageButton
+			style="?android:attr/buttonBarButtonStyle"
+			android:layout_height="match_parent"
+			android:layout_width="0dp"
+			android:src="@android:drawable/ic_menu_close_clear_cancel"
+			android:layout_weight="0.1"
+			android:onClick="onSeePasswdButtonClicked"/>
 
 	</LinearLayout>
 
