@@ -52,7 +52,8 @@
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:orientation="horizontal">
+		android:orientation="horizontal"
+		android:gravity="center">
 
 		<TextView
 			android:layout_width="0dp"
@@ -67,11 +68,24 @@
 			android:layout_height="match_parent"
 			android:layout_weight="0.4"/>
 
-		<ImageButton
+		<ImageView
 			android:id="@+id/main_ibVerify"
 			android:layout_width="0dp"
 			android:layout_height="match_parent"
 			android:layout_weight="0.4"
+			android:onClick="onGetVcodeButtonClicked"
+			android:scaleType="fitCenter"
+			android:visibility="gone"/>
+
+		<TextView
+			android:layout_height="match_parent"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:layout_width="0dp"
+			android:text="获取验证码"
+			android:id="@+id/main_tvgetvcode"
+			android:layout_weight="0.4"
+			android:visibility="visible"
+			android:gravity="center"
 			android:onClick="onGetVcodeButtonClicked"/>
 
 	</LinearLayout>
@@ -91,6 +105,17 @@
 		android:textColor="#F40E00"
 		android:id="@+id/main_tvError"
 		android:visibility="gone"/>
+
+	<ScrollView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent">
+
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:id="@+id/main_logcat"/>
+
+	</ScrollView>
 
 </LinearLayout>
 
