@@ -1,5 +1,6 @@
 package b513.bjutpe.UI;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,8 +17,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -159,7 +158,8 @@ public class MainActivity extends AppCompatActivity {
     //后台登录任务类
     class LoginTask extends AsyncTask<Void, Void, String> {
 
-        private String uname, passwd, vcode, cookie;
+        private String uname, passwd, vcode, cookie, html;
+
 
         public LoginTask(String uname, String passwd, String vcode, String cookie) {
             this.uname = uname;
@@ -181,12 +181,14 @@ public class MainActivity extends AppCompatActivity {
         @Override//后处理，重新允许使用按钮
         protected void onPostExecute(String result) {
             // TODO: Implement this method
+            Intent i = new Intent(MainActivity.this, CourseListActivity.class);
             super.onPostExecute(result);
             MainActivity.this.ibVcode.setEnabled(true);
             MainActivity.this.ibVcode.setEnabled(true);
             MainActivity.this.btnLogin.setEnabled(true);
             MainActivity.this.btnLogin.setText(R.string.login);
-            ;
+            startActivity(i);
+            finish();
         }
 
         @Override//在后台登录
@@ -257,11 +259,7 @@ public class MainActivity extends AppCompatActivity {
             Response res;//准备接收响应
             try {
                 res = hc.newCall(req).execute();
-                String data = res.body().string();
-                FileWriter fos = new FileWriter(
-                        new File("/sdcard/whig.html"));
-                fos.write(data);
-                fos.close();
+                html = res.body().string();
             } catch (Exception e) {
                 return null;
             }
