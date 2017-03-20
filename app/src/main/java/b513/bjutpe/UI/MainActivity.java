@@ -1,5 +1,6 @@
 package b513.bjutpe.UI;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,13 +16,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import b513.bjutpe.R;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
 import java.io.File;
-import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import b513.bjutpe.R;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.FormBody;
@@ -29,17 +35,14 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 
 public class MainActivity extends AppCompatActivity {
-//
+    //
     //界面组件
     TextView tvError, tvGetVcode, tvLogcat;
     EditText etUname, etPasswd, etVcode;
     ImageView ibVcode;
-    Button btnLogin;
+    Button btnLogin, btnTest;
     boolean pwMode;//密码显示模式
     //登录前后的cookie。前者可能无用。
     List<Cookie> cookieso, cookiesp;
@@ -52,6 +55,12 @@ public class MainActivity extends AppCompatActivity {
      * 这种格式的函数都嫑直接更改名字和参数
      * 要和xml里相应控件的onClick属性一致
      */
+
+    public void onTestButtonClicked(View v) {
+        Intent i = new Intent(MainActivity.this, CourseListActivity.class);
+        startActivity(i);
+    }
+
     public void onLoginButtonClicked(View v) {
         String uname = etUname.getText().toString();
         String passwd = etPasswd.getText().toString();
@@ -87,20 +96,20 @@ public class MainActivity extends AppCompatActivity {
     public void onGetVcodeButtonClicked(View v) {
         //开启后台获取验证码任务
         //new GetVcodeTask().execute();  
-		try{
-			String str;
-			//str="/sdcard/eolnlogin.html";
-			str="/sdcard/whig.html";
-			Document doc=Jsoup.parse(new File(str),"utf-8");
-			Elements loginforms=doc.getElementsByAttributeValue("name","LoginForm");
-			if(loginforms.size()==1){
-				//登录失败
-				return;
-			}log(""+doc.select("div TABLE TR TD SPAN").size());
-		}
-		catch(Exception e){
-			log(e);
-		}
+        try {
+            String str;
+            //str="/sdcard/eolnlogin.html";
+            str = "/sdcard/whig.html";
+            Document doc = Jsoup.parse(new File(str), "utf-8");
+            Elements loginforms = doc.getElementsByAttributeValue("name", "LoginForm");
+            if (loginforms.size() == 1) {
+                //登录失败
+                return;
+            }
+            log("" + doc.select("div TABLE TR TD SPAN").size());
+        } catch (Exception e) {
+            log(e);
+        }
     }
 
     public void onClearEtsButtonClicked(View v) {
@@ -132,11 +141,12 @@ public class MainActivity extends AppCompatActivity {
         btnLogin = (Button) findViewById(R.id.main_btnLogin);
         tvError = (TextView) findViewById(R.id.main_tvError);
         tvLogcat = (TextView) findViewById(R.id.main_logcat);
+        btnTest = (Button) findViewById(R.id.button);
         etPasswd.setFilters(new InputFilter[]{new InputFilter() {
             @Override
             public CharSequence filter(CharSequence p1, int p2, int p3, Spanned p4, int p5, int p6) {
                 return p1.toString().replace(Utils.SPLIT_LOGININFOS, "");
-				//Prevent the user from entering seperator, which messes up data structure.
+                //Prevent the user from entering seperator, which messes up data structure.
             }
         }});
         pwMode = false;
@@ -155,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
             etPasswd.setText(passwds.get(0));
         }
 
+
     }
 
     //打印一条消息，在调试用的显示框
@@ -163,14 +174,14 @@ public class MainActivity extends AppCompatActivity {
         tvLogcat.append(s);
         tvLogcat.append("\n");
     }
-	
-	private void log(Exception e){
-		StringWriter sw=new StringWriter();
-		PrintWriter pw=new PrintWriter(sw);
-		e.printStackTrace(pw);
-		log(sw.toString());
-		pw.close();
-	}
+
+    private void log(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        log(sw.toString());
+        pw.close();
+    }
 
     //显示登录错误，比如没输密码
     private void showError(String err) {
@@ -181,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
     //后台登录任务类
     class LoginTask extends AsyncTask<Void, Void, String> {
 
-        private String uname, passwd, vcode, cookie;
+        private String uname, passwd, vcode, cookie, html;
 
         public LoginTask(String uname, String passwd, String vcode, String cookie) {
             this.uname = uname;
@@ -203,18 +214,20 @@ public class MainActivity extends AppCompatActivity {
         @Override//后处理，重新允许使用按钮
         protected void onPostExecute(String result) {
             // TODO: Implement this method
+            Intent i = new Intent(MainActivity.this, CourseListActivity.class);
             super.onPostExecute(result);
             MainActivity.this.ibVcode.setEnabled(true);
             MainActivity.this.ibVcode.setEnabled(true);
             MainActivity.this.btnLogin.setEnabled(true);
             MainActivity.this.btnLogin.setText(R.string.login);
-            ;
+            startActivity(i);
+            finish();
         }
 
         @Override//在后台登录
         protected String doInBackground(Void[] p1) {
             /*try {让用户等待一秒钟，将时间续给长者
-			 (其实是为了测试)
+             (其实是为了测试)
 			 Thread.currentThread().sleep(1000);
 			 }
 			 catch(InterruptedException e) {}*/
@@ -279,11 +292,7 @@ public class MainActivity extends AppCompatActivity {
             Response res;//准备接收响应
             try {
                 res = hc.newCall(req).execute();
-                String data = res.body().string();
-                FileWriter fos = new FileWriter(
-                        new File("/sdcard/whig.html"));
-                fos.write(data);
-                fos.close();
+                html = res.body().string();
             } catch (Exception e) {
                 return null;
             }
