@@ -26,6 +26,7 @@ dependencies {
     })*/
     compile 'com.android.support:appcompat-v7:+'
 	compile 'com.squareup.okhttp3:okhttp:3.6.0'
+   compile 'org.jsoup:jsoup:+'
    
     testCompile 'junit:junit:4.12'
 }

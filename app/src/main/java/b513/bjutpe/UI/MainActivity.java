@@ -15,13 +15,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import b513.bjutpe.R;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import b513.bjutpe.R;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.FormBody;
@@ -29,6 +29,9 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -83,8 +86,21 @@ public class MainActivity extends AppCompatActivity {
     //获取验证码按钮被点击
     public void onGetVcodeButtonClicked(View v) {
         //开启后台获取验证码任务
-        //new GetVcodeTask().execute();
-
+        //new GetVcodeTask().execute();  
+		try{
+			String str;
+			//str="/sdcard/eolnlogin.html";
+			str="/sdcard/whig.html";
+			Document doc=Jsoup.parse(new File(str),"utf-8");
+			Elements loginforms=doc.getElementsByAttributeValue("name","LoginForm");
+			if(loginforms.size()==1){
+				//登录失败
+				return;
+			}log(""+doc.select("div TABLE TR TD SPAN").size());
+		}
+		catch(Exception e){
+			log(e);
+		}
     }
 
     public void onClearEtsButtonClicked(View v) {
@@ -116,15 +132,13 @@ public class MainActivity extends AppCompatActivity {
         btnLogin = (Button) findViewById(R.id.main_btnLogin);
         tvError = (TextView) findViewById(R.id.main_tvError);
         tvLogcat = (TextView) findViewById(R.id.main_logcat);
-        //不允许输入分隔符，因为密码不可能包含它，而它会干扰程序
-        InputFilter Separator = new InputFilter() {
+        etPasswd.setFilters(new InputFilter[]{new InputFilter() {
             @Override
             public CharSequence filter(CharSequence p1, int p2, int p3, Spanned p4, int p5, int p6) {
-                //log(""+p1+","+p2+","+p3+","+p4+","+p5+","+p6);
                 return p1.toString().replace(Utils.SPLIT_LOGININFOS, "");
+				//Prevent the user from entering seperator, which messes up data structure.
             }
-        };
-        etPasswd.setFilters(new InputFilter[]{Separator});
+        }});
         pwMode = false;
 
         //初始化其他变量
@@ -149,6 +163,14 @@ public class MainActivity extends AppCompatActivity {
         tvLogcat.append(s);
         tvLogcat.append("\n");
     }
+	
+	private void log(Exception e){
+		StringWriter sw=new StringWriter();
+		PrintWriter pw=new PrintWriter(sw);
+		e.printStackTrace(pw);
+		log(sw.toString());
+		pw.close();
+	}
 
     //显示登录错误，比如没输密码
     private void showError(String err) {
