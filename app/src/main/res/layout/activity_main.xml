@@ -1,146 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical"
-	tools:context="b513.bjutpe.UI.MainActivity"
-	android:layout_margin="20dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="20dp"
+    android:orientation="vertical"
+    tools:context="b513.bjutpe.UI.MainActivity">
 
-	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-		<TextView
-			android:layout_width="0dp"
-			android:layout_height="match_parent"
-			android:text="@string/username"
-			android:layout_weight="0.2"
-			android:gravity="center"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.2"
+            android:gravity="center"
+            android:text="@string/username" />
 
-		<EditText
-			android:id="@+id/main_etUsername"
-			android:layout_width="0dp"
-			android:layout_height="match_parent"
-			android:layout_weight="0.6"
-			android:inputType="number"/>
+        <EditText
+            android:id="@+id/main_etUsername"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
+            android:inputType="number" />
 
-		<ImageButton
-			style="?android:attr/buttonBarButtonStyle"
-			android:layout_height="match_parent"
-			android:layout_width="0dp"
-			android:src="@android:drawable/ic_menu_close_clear_cancel"
-			android:layout_weight="0.1"
-			android:onClick="onClearEtsButtonClicked"/>
+        <ImageButton
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:onClick="onClearEtsButtonClicked"
+            android:src="@android:drawable/ic_menu_close_clear_cancel" />
 
-		<ImageButton
-			style="?android:attr/buttonBarButtonStyle"
-			android:layout_height="match_parent"
-			android:layout_width="0dp"
-			android:src="@android:drawable/ic_menu_close_clear_cancel"
-			android:layout_weight="0.1"/>
+        <ImageButton
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:src="@android:drawable/ic_menu_close_clear_cancel" />
 
-	</LinearLayout>
+    </LinearLayout>
 
-	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-		<TextView
-			android:layout_width="0dp"
-			android:layout_height="match_parent"
-			android:text="@string/password"
-			android:layout_weight="0.2"
-			android:gravity="center"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.2"
+            android:gravity="center"
+            android:text="@string/password" />
 
-		<EditText
-			android:id="@+id/main_etPassword"
-			android:layout_width="0dp"
-			android:layout_height="match_parent"
-			android:layout_weight="0.7"
-			android:inputType="textPassword"/>
+        <EditText
+            android:id="@+id/main_etPassword"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.7"
+            android:inputType="textPassword" />
 
-		<ImageButton
-			style="?android:attr/buttonBarButtonStyle"
-			android:layout_height="match_parent"
-			android:layout_width="0dp"
-			android:src="@android:drawable/ic_menu_close_clear_cancel"
-			android:layout_weight="0.1"
-			android:onClick="onSeePasswdButtonClicked"/>
+        <ImageButton
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:onClick="onSeePasswdButtonClicked"
+            android:src="@android:drawable/ic_menu_close_clear_cancel" />
 
-	</LinearLayout>
+    </LinearLayout>
 
-	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		android:gravity="center">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
 
-		<TextView
-			android:layout_width="0dp"
-			android:layout_height="match_parent"
-			android:text="@string/verification_code"
-			android:layout_weight="0.2"
-			android:gravity="center"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.2"
+            android:gravity="center"
+            android:text="@string/verification_code" />
 
-		<EditText
-			android:id="@+id/main_etVerify"
-			android:layout_width="0dp"
-			android:layout_height="match_parent"
-			android:layout_weight="0.4"/>
+        <EditText
+            android:id="@+id/main_etVerify"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.4" />
 
-		<ImageView
-			android:id="@+id/main_ibVerify"
-			android:layout_width="0dp"
-			android:layout_height="match_parent"
-			android:layout_weight="0.4"
-			android:onClick="onGetVcodeButtonClicked"
-			android:scaleType="fitCenter"
-			android:visibility="gone"/>
+        <ImageView
+            android:id="@+id/main_ibVerify"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.4"
+            android:onClick="onGetVcodeButtonClicked"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
 
-		<TextView
-			android:layout_height="match_parent"
-			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:layout_width="0dp"
-			android:text="@string/verification_code_hint"
-			android:id="@+id/main_tvgetvcode"
-			android:layout_weight="0.4"
-			android:visibility="visible"
-			android:gravity="center"
-			android:onClick="onGetVcodeButtonClicked"/>
+        <TextView
+            android:id="@+id/main_tvgetvcode"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.4"
+            android:gravity="center"
+            android:onClick="onGetVcodeButtonClicked"
+            android:text="@string/verification_code_hint"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:visibility="visible" />
 
-	</LinearLayout>
+    </LinearLayout>
 
-	<Button
-		android:id="@+id/main_btnLogin"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:text="@string/login"
-		android:onClick="onLoginButtonClicked"/>
+    <Button
+        android:id="@+id/main_btnLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onLoginButtonClicked"
+        android:text="@string/login" />
 
-	<TextView
-		android:layout_height="wrap_content"
-		android:textAppearance="?android:attr/textAppearanceSmall"
-		android:layout_width="match_parent"
-		android:text="Small Text"
-		android:textColor="@color/main_tvError"
-		android:id="@+id/main_tvError"
-		android:visibility="gone"/>
+    <TextView
+        android:id="@+id/main_tvError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Small Text"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/main_tvError"
+        android:visibility="gone" />
 
-	<ScrollView
-		android:layout_height="wrap_content"
-		android:layout_width="match_parent">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-		<TextView
-			android:layout_height="wrap_content"
-			android:layout_width="match_parent"
-			android:id="@+id/main_logcat"/>
+        <TextView
+            android:id="@+id/main_logcat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-	</ScrollView>
+    </ScrollView>
 
 </LinearLayout>
 

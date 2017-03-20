@@ -5,10 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="b513.bjutpe.UI.CourseListActivity">
-<ListView
-    android:id="@+id/course_lvCourse"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-</ListView>
+    <ListView
+        android:id="@+id/course_lvCourse"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </ListView>
 </LinearLayout>
