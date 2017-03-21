@@ -11,23 +11,17 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
-import java.io.File;
+import b513.bjutpe.R;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import b513.bjutpe.R;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.FormBody;
@@ -35,6 +29,9 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 public class MainActivity extends AppCompatActivity {
     //
@@ -56,112 +53,98 @@ public class MainActivity extends AppCompatActivity {
      * 要和xml里相应控件的onClick属性一致
      */
 
-    public void onTestButtonClicked(View v) {
-        Intent i = new Intent(MainActivity.this, CourseListActivity.class);
+    public void onTestButtonClicked(View v){
+        Intent i = new Intent(MainActivity.this,CourseListActivity.class);
         startActivity(i);
     }
 
-    public void onLoginButtonClicked(View v) {
+    public void onLoginButtonClicked(View v){
         String uname = etUname.getText().toString();
         String passwd = etPasswd.getText().toString();
         String vcode = etVcode.getText().toString();
-        if (uname.length() == 0) {
-            showError("请填写用户名");
+        if(uname.length()==0){
+            showError(R.string.prelogerr_name);
             return;
         }
-        if (passwd.length() == 0) {
-            showError("请填写密码");
+        if(passwd.length()==0){
+            showError(R.string.prelogerr_pass);
             return;
         }
-        if (vcode.length() == 0) {
-            showError("请填写验证码");
+        if(vcode.length()==0){
+            showError(R.string.prelogerr_veri);
             return;
         }
         //让错误提示文本消失
         tvError.setVisibility(View.GONE);
         //保存用户名密码
         int ind = unames.indexOf(uname);
-        if (ind == -1) {//如果第一次使用这个用户名
+        if(ind==-1){//如果第一次使用这个用户名
             unames.add(uname);//添加进去
             passwds.add(passwd);
-        } else {//替换密码
-            passwds.set(ind, passwd);
+        }else{//替换密码
+            passwds.set(ind,passwd);
         }
-        Utils.saveLoginInfos(sp, unames, passwds);
+        Utils.saveLoginInfos(sp,unames,passwds);
         //登录
-        //new LoginTask(uname,passwd,vcode,null).execute();
+        new LoginTask(uname,passwd,vcode,null).execute();
     }
 
     //获取验证码按钮被点击
-    public void onGetVcodeButtonClicked(View v) {
+    public void onGetVcodeButtonClicked(View v){
         //开启后台获取验证码任务
-        //new GetVcodeTask().execute();  
-        try {
-            String str;
-            //str="/sdcard/eolnlogin.html";
-            str = "/sdcard/whig.html";
-            Document doc = Jsoup.parse(new File(str), "utf-8");
-            Elements loginforms = doc.getElementsByAttributeValue("name", "LoginForm");
-            if (loginforms.size() == 1) {
-                //登录失败
-                return;
-            }
-            log("" + doc.select("div TABLE TR TD SPAN").size());
-        } catch (Exception e) {
-            log(e);
-        }
+        new GetVcodeTask().execute();
     }
 
-    public void onClearEtsButtonClicked(View v) {
+    public void onClearEtsButtonClicked(View v){
         etUname.setText("");
         etPasswd.setText("");
     }
 
-    public void onSeePasswdButtonClicked(View v) {
-        if (pwMode) {
+    public void onSeePasswdButtonClicked(View v){
+        if(pwMode){
             etPasswd.setInputType(129);
-        } else {
-            etPasswd.setInputType(InputType.TYPE_NULL);
+        }else{
+            etPasswd.setInputType(InputType.TYPE_CLASS_TEXT);
         }
-        pwMode = !pwMode;
+        pwMode=!pwMode;
 
     }
 
     @Override//Activity创建时触发
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         //初始化界面组件指针
-        tvGetVcode = (TextView) findViewById(R.id.main_tvgetvcode);
-        etUname = (EditText) findViewById(R.id.main_etUsername);
-        etPasswd = (EditText) findViewById(R.id.main_etPassword);
-        etVcode = (EditText) findViewById(R.id.main_etVerify);
-        ibVcode = (ImageView) findViewById(R.id.main_ibVerify);
-        btnLogin = (Button) findViewById(R.id.main_btnLogin);
-        tvError = (TextView) findViewById(R.id.main_tvError);
-        tvLogcat = (TextView) findViewById(R.id.main_logcat);
-        btnTest = (Button) findViewById(R.id.button);
+        tvGetVcode=(TextView) findViewById(R.id.main_tvgetvcode);
+        etUname=(EditText) findViewById(R.id.main_etUsername);
+        etPasswd=(EditText) findViewById(R.id.main_etPassword);
+        etVcode=(EditText) findViewById(R.id.main_etVerify);
+        ibVcode=(ImageView) findViewById(R.id.main_ibVerify);
+        btnLogin=(Button) findViewById(R.id.main_btnLogin);
+        tvError=(TextView) findViewById(R.id.main_tvError);
+        tvLogcat=(TextView) findViewById(R.id.main_logcat);
         etPasswd.setFilters(new InputFilter[]{new InputFilter() {
-            @Override
-            public CharSequence filter(CharSequence p1, int p2, int p3, Spanned p4, int p5, int p6) {
-                return p1.toString().replace(Utils.SPLIT_LOGININFOS, "");
-                //Prevent the user from entering seperator, which messes up data structure.
-            }
-        }});
-        pwMode = false;
+									@Override
+									public CharSequence filter(CharSequence p1,int p2,int p3,Spanned p4,int p5,int p6){
+										return p1.toString().replace(Utils.SPLIT_LOGININFOS,"");
+										//Prevent the user from entering seperator, which messes up data structure.
+									}
+								}});
+        pwMode=false;
 
         //初始化其他变量
-        sp = getSharedPreferences(Utils.SPREFNAME_MAIN, 0);
-        unames = new ArrayList<String>();
-        passwds = new ArrayList<String>();
+        sp=getSharedPreferences(Utils.SPREFNAME_MAIN,0);
+        unames=new ArrayList<String>();
+        passwds=new ArrayList<String>();
 
         //加载用户名密码
-        Utils.getLoginInfos(sp, unames, passwds);
-        if (unames.size() > 0) {
+        Utils.getLoginInfos(sp,unames,passwds);
+        if(unames.size()>0){
             etUname.setText(unames.get(0));
         }
-        if (passwds.size() > 0) {
+        if(passwds.size()>0){
             etPasswd.setText(passwds.get(0));
         }
 
@@ -169,13 +152,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //打印一条消息，在调试用的显示框
-    private void log(String s) {
+    private void log(String s){
         tvLogcat.append(">>> ");
         tvLogcat.append(s);
         tvLogcat.append("\n");
     }
 
-    private void log(Exception e) {
+    private void log(Exception e){
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
@@ -184,25 +167,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //显示登录错误，比如没输密码
-    private void showError(String err) {
+	private void showError(int res){
+		tvError.setVisibility(View.VISIBLE);
+        tvError.setText(res);
+	}
+
+    private void showError(String err){
         tvError.setVisibility(View.VISIBLE);
         tvError.setText(err);
     }
 
     //后台登录任务类
-    class LoginTask extends AsyncTask<Void, Void, String> {
+    class LoginTask extends AsyncTask<Void, Void, String>{
 
-        private String uname, passwd, vcode, cookie, html;
+        private String uname, passwd, vcode, cookie;
 
-        public LoginTask(String uname, String passwd, String vcode, String cookie) {
-            this.uname = uname;
-            this.passwd = passwd;
-            this.vcode = vcode;
-            this.cookie = cookie;
+        public LoginTask(String uname,String passwd,String vcode,String cookie){
+            this.uname=uname;
+            this.passwd=passwd;
+            this.vcode=vcode;
+            this.cookie=cookie;
         }
 
         @Override//预处理
-        protected void onPreExecute() {
+        protected void onPreExecute(){
             super.onPreExecute();
             //禁止用户再点击按钮，并显示正在登录
             MainActivity.this.ibVcode.setEnabled(false);
@@ -212,107 +200,125 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override//后处理，重新允许使用按钮
-        protected void onPostExecute(String result) {
-            // TODO: Implement this method
-            Intent i = new Intent(MainActivity.this, CourseListActivity.class);
-            super.onPostExecute(result);
+        protected void onPostExecute(String result){
+            Intent i = new Intent(MainActivity.this,CourseListActivity.class);
             MainActivity.this.ibVcode.setEnabled(true);
-            MainActivity.this.ibVcode.setEnabled(true);
+            MainActivity.this.tvGetVcode.setEnabled(true);
             MainActivity.this.btnLogin.setEnabled(true);
             MainActivity.this.btnLogin.setText(R.string.login);
+			if(result==null){
+				//网络异常
+				showError(R.string.logerr_net);
+				return;
+			}
+			try{
+				Document doc = Jsoup.parse(result);
+				Elements loginforms = doc.getElementsByAttributeValue("name","LoginForm");
+				if(loginforms.size()==1){
+					//登录失败
+					showError(R.string.logerr_login);
+					return;
+				}
+				Elements els0=doc.select("div TABLE TR TD SPAN font");
+				if(els0.size()<1){
+					//未知错误
+					showError(R.string.logerr_unk);
+					return;
+				}
+				String s0=els0.get(0).ownText();
+				int ind0=s0.indexOf("当前用户：")+5;
+				if(ind0<s0.length()&&ind0>=0){
+					s0=s0.substring(ind0);
+					Toast.makeText(MainActivity.this,"欢迎您，"+s0+"~",0).show();
+				}else{
+					//Won't happen
+				}
+			}
+			catch(Exception e){
+				log(e);
+			}
             startActivity(i);
             finish();
         }
 
         @Override//在后台登录
-        protected String doInBackground(Void[] p1) {
+        protected String doInBackground(Void[] p1){
             /*try {让用户等待一秒钟，将时间续给长者
              (其实是为了测试)
 			 Thread.currentThread().sleep(1000);
 			 }
 			 catch(InterruptedException e) {}*/
+			if(cookieso==null) return null;
+
             Cookie coo = null;
             //从Cookie列表里找出JSESSIONID，不区分大小写
-            for (Cookie co : cookieso) {
-                if (co.name().toLowerCase().equals("jsessionid")) {
-                    coo = co;
+            for(Cookie co : cookieso){
+                if(co.name().toLowerCase().equals("jsessionid")){
+                    coo=co;
                     break;
                 }
             }
-            if (coo == null) {
+            if(coo==null){
                 //如果没有，那可真是日了狗了
-                return "0";
-            }
-
-			/* OkHttp大量采用Builder这一概念进行类
-			 * 实例的创建和设置。体会这样做的方便
-			 * 原本是
-			 * A a=new A(xx,xx);
-			 * a.setXx(xx);
-			 * 或者
-			 * A a=new A();
-			 * a.setXx(xx);
-			 * a.setXx(xx);
-			 * 对于一些需要参数多的类，
-			 * 内部实现和外部调用都会麻烦。
-			 * 现在的格式是
-			 * A a=new A.Builder()
-			 * .xx(xx)
-			 * .xx(xx)
-			 * .build();
-			 * 最开始可能不习惯，适应了会发现真的好用。
-			 */
-            OkHttpClient hc = new OkHttpClient.Builder()
-                    .cookieJar(new CookieJar() {
-                        /* CookieJar用来定义Http客户端对cookie的加载
-                         * 和得到cookie后的操作。这里登录时需要提交co
-                         * kie，登录后需要保留新的cookie，以便后续使
-                         * 用。
-                         */
-                        @Override
-                        public void saveFromResponse(HttpUrl p1, List<Cookie> p2) {
-                            cookiesp = p2;
-                        }
-
-                        @Override
-                        public List<Cookie> loadForRequest(HttpUrl p1) {
-                            return cookieso;
-                        }
-                    })
-                    .build();
-            FormBody fb = new FormBody.Builder()//表单数据
-                    .add("username", uname)
-                    .add("userpwd", passwd)
-                    .add("code", vcode)
-                    .build();
-            Request req = new Request.Builder()//创建POST请求
-                    .url("http://eol.bjut.edu.cn/Login.do;" + coo.name() + "=" + coo.value())
-                    .post(fb)
-                    .build();
-            Response res;//准备接收响应
-            try {
-                res = hc.newCall(req).execute();
-                html = res.body().string();
-            } catch (Exception e) {
                 return null;
             }
-            return null;
+
+            OkHttpClient hc = new OkHttpClient.Builder()
+				.cookieJar(new CookieJar() {
+					/* CookieJar用来定义Http客户端对cookie的加载
+					 * 和得到cookie后的操作。这里登录时需要提交co
+					 * kie，登录后需要保留新的cookie，以便后续使
+					 * 用。
+					 */
+					@Override
+					public void saveFromResponse(HttpUrl p1,List<Cookie> p2){
+						cookiesp=p2;
+					}
+
+					@Override
+					public List<Cookie> loadForRequest(HttpUrl p1){
+						if(cookieso!=null){
+							if(cookieso instanceof ArrayList<Cookie>){
+								return cookieso;
+							}
+						}
+						return new ArrayList<Cookie>();
+					}
+				})
+				.build();
+            FormBody fb = new FormBody.Builder()//表单数据
+				.add("username",uname)
+				.add("userpwd",passwd)
+				.add("code",vcode)
+				.build();
+            Request req = new Request.Builder()//创建POST请求
+				.url("http://eol.bjut.edu.cn/Login.do;"+coo.name()+"="+coo.value())
+				.post(fb)
+				.build();
+            Response res;//准备接收响应
+            try{
+                res=hc.newCall(req).execute();
+                return res.body().string();
+            }
+			catch(Exception e){
+                return null;
+            }
         }
     }
 
     /* 习题0.0: 这是后台获取验证码的类，请仿照上面的例子，
      * 为这段代码写注释。
      */
-    class GetVcodeTask extends AsyncTask<Void, Void, String> {
+    class GetVcodeTask extends AsyncTask<Void, Void, String>{
         private boolean gotBmp;
         private Bitmap bmp;
 
-        public GetVcodeTask() {
-            gotBmp = false;
+        public GetVcodeTask(){
+            gotBmp=false;
         }
 
         @Override
-        protected void onPreExecute() {
+        protected void onPreExecute(){
             super.onPreExecute();
             MainActivity.this.btnLogin.setEnabled(false);
             MainActivity.this.ibVcode.setEnabled(false);
@@ -323,55 +329,57 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(String result){
             super.onPostExecute(result);
             MainActivity.this.ibVcode.setEnabled(true);
             MainActivity.this.btnLogin.setEnabled(true);
-            if (gotBmp) {
+            if(gotBmp){
                 ibVcode.setImageBitmap(bmp);
                 ibVcode.setVisibility(View.VISIBLE);
                 tvGetVcode.setVisibility(View.GONE);
-                for (Cookie coo : cookieso) {
-                    log(coo.name() + ":" + coo.value());
+                for(Cookie coo : cookieso){
+                    log(coo.name()+":"+coo.value());
                 }
-            } else {
+            }else{
                 //ibVcode.setVisibility(View.GONE);
                 //tvGetVcode.setVisibility(View.VISIBLE);
                 tvGetVcode.setText(R.string.verification_code_hint);
-                Toast.makeText(MainActivity.this, "获取验证码失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this,"获取验证码失败",Toast.LENGTH_SHORT).show();
             }
         }
 
         @Override
-        protected String doInBackground(Void[] p1) {
+        protected String doInBackground(Void[] p1){
             //if(true)return null;
             OkHttpClient hc = new OkHttpClient.Builder()
-                    .cookieJar(new CookieJar() {
-                        @Override
-                        public void saveFromResponse(HttpUrl p1, List<Cookie> p2) {
-                            cookieso = p2;
-                        }
+				.cookieJar(new CookieJar() {
+					@Override
+					public void saveFromResponse(HttpUrl p1,List<Cookie> p2){
+						cookieso=p2;
+					}
 
-                        @Override
-                        public List<Cookie> loadForRequest(HttpUrl p1) {
-                            return new ArrayList<Cookie>();
-                        }
-                    })
-                    .build();
+					@Override
+					public List<Cookie> loadForRequest(HttpUrl p1){
+						return new ArrayList<Cookie>();
+					}
+				})
+				.build();
             Request req = new Request.Builder()
-                    .url("http://eol.bjut.edu.cn/image.jsp")
-                    //.url("http://www.baidu.com")
-                    .build();
+				.url("http://eol.bjut.edu.cn/image.jsp")
+				//.url("http://www.baidu.com")
+				.build();
             Response res;
-            try {
-                res = hc.newCall(req).execute();
-            } catch (Exception e) {
+            try{
+                res=hc.newCall(req).execute();
+            }
+			catch(Exception e){
                 return null;
             }
-            try {
-                bmp = BitmapFactory.decodeStream(res.body().byteStream());
-                gotBmp = true;
-            } catch (Exception e) {
+            try{
+                bmp=BitmapFactory.decodeStream(res.body().byteStream());
+                gotBmp=true;
+            }
+			catch(Exception e){
                 return null;
             }
             return null;

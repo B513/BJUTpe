@@ -7,5 +7,11 @@
     <string name="loggingin">登录中...</string>
     <string name="verification_code_hint">获取验证码</string>
     <string name="plzwait">请稍候...</string>
+	<string name="logerr_net">网络异常</string>
+	<string name="logerr_unk">未知错误</string>
+	<string name="logerr_login">登录失败</string>
+	<string name="prelogerr_name">请填写用户名</string>
+	<string name="prelogerr_pass">请填写咪码</string>
+	<string name="prelogerr_veri">请填写验证码</string>
 
 </resources>
