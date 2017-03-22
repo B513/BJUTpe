@@ -20,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import b513.bjutpe.R;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import java.io.FileWriter;
 
 public class MainActivity extends AppCompatActivity {
     //
@@ -270,40 +273,40 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.this.btnLogin.setText(R.string.login);
 			if(result==null){
 				//网络异常
-				showError(R.string.logerr_net);
-				return;
-			}
-			try{
-				Document doc = Jsoup.parse(result);
-				Elements loginforms = doc.getElementsByAttributeValue("name","LoginForm");
-				if(loginforms.size()==1){
-					//登录失败
-					showError(R.string.logerr_login);
-					return;
-				}
-				Elements els0=doc.select("div TABLE TR TD SPAN font");
-				if(els0.size()<1){
-					//未知错误
-					showError(R.string.logerr_unk);
-					return;
-				}
-				String s0=els0.get(0).ownText();
-				int ind0=s0.indexOf("当前用户：")+5;
-				if(ind0<s0.length()&&ind0>=0){
-					s0=s0.substring(ind0);
-					Toast.makeText(MainActivity.this,"欢迎您，"+s0+"~",0).show();
-				}else{
-					//Won't happen
-				}
-			}
-			catch(Exception e){
-				log(e);
-			}
-            startActivity(
-			new Intent(MainActivity.this,CourseListActivity.class)
-			.putExtra("homepage",result));
-            finish();
-        }
+				showError(R.string.logerr_net); 
+				return;  
+			} 
+			try{ 
+				Document doc = Jsoup.parse(result); 
+				Elements loginforms = doc.getElementsByAttributeValue("name","LoginForm"); 
+				if(loginforms.size()==1){ 
+					//登录失败 
+					showError(R.string.logerr_login); 
+					return;  
+				} 
+				Elements els0=doc.select("div TABLE TR TD SPAN font"); 
+				if(els0.size()<1){ 
+					//未知错误 
+					showError(R.string.logerr_unk); 
+					return; 
+				} 
+				String s0=els0.get(0).ownText(); 
+				int ind0=s0.indexOf("当前用户：")+5; 
+				if(ind0<s0.length()&&ind0>=0){ 
+					s0=s0.substring(ind0); 
+					Toast.makeText(MainActivity.this,"欢迎您，可爱的"+s0+"~",0).show();
+				}else{ 
+					//Won't happen 
+				} 
+			} 
+			catch(Exception e){ 
+				log(e); 
+			} 
+            startActivity( 
+			new Intent(MainActivity.this,CourseListActivity.class) 
+			.putExtra("homepage",result)); 
+            finish(); 
+        } 
 
         @Override//在后台登录
         protected String doInBackground(Void[] p1){
@@ -326,7 +329,6 @@ public class MainActivity extends AppCompatActivity {
                 //如果没有，那可真是日了狗了
                 return null;
             }
-
             OkHttpClient hc = new OkHttpClient.Builder()
 				.cookieJar(new CookieJar() {
 					/* CookieJar用来定义Http客户端对cookie的加载
@@ -342,10 +344,8 @@ public class MainActivity extends AppCompatActivity {
 					@Override
 					public List<Cookie> loadForRequest(HttpUrl p1){
 						if(cookieso!=null){
-							if(cookieso instanceof ArrayList<Cookie>){
 								return cookieso;
 							}
-						}
 						return new ArrayList<Cookie>();
 					}
 				})
@@ -355,6 +355,7 @@ public class MainActivity extends AppCompatActivity {
 				.add("userpwd",passwd)
 				.add("code",vcode)
 				.build();
+			
             Request req = new Request.Builder()//创建POST请求
 				.url("http://eol.bjut.edu.cn/Login.do;"+coo.name()+"="+coo.value())
 				.post(fb)
@@ -362,7 +363,12 @@ public class MainActivity extends AppCompatActivity {
             Response res;//准备接收响应
             try{
                 res=hc.newCall(req).execute();
-                return res.body().string();
+				String a=res.body().string();
+				FileWriter fos=new FileWriter(
+				new File("/sdcard/00.html"));
+				fos.write(a);
+				fos.close();
+                return a;
             }
 			catch(Exception e){
                 return null;
