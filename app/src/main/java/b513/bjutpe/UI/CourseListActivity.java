@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import b513.bjutpe.R;
+import org.jsoup.nodes.Document;
+import org.jsoup.Jsoup;
 
 public class CourseListActivity extends AppCompatActivity {
     ListView CourseList;
@@ -18,6 +20,11 @@ public class CourseListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+		try{
+			Document doc=Jsoup.parse(getIntent().getStringExtra("homepage"));
+		}catch(Exception e){
+			return;
+		}
         CourseList = new ListView(this);
         SimpleAdapter adapter = new SimpleAdapter(this, getCourse(), R.layout.item_courselist,
                 new String[]{"item_courseName", "item_teacher"},
@@ -42,7 +49,7 @@ public class CourseListActivity extends AppCompatActivity {
         map = new HashMap<String, Object>();
         map.put("item_courseName", "马原");
         map.put("item_teacher", "马克思");
-        list.add(map);
+        for(int i=0;i<100;i++){list.add(map);}
 
         return list;
     }

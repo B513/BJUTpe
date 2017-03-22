@@ -1,5 +1,7 @@
 package b513.bjutpe.UI;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences sp;
     //所有用户名密码
     List<String> unames, passwds;
+	List<Integer> dellist;
 
     /* 登录按钮按下时触发
      * 这种格式的函数都嫑直接更改名字和参数
@@ -94,6 +97,66 @@ public class MainActivity extends AppCompatActivity {
         //开启后台获取验证码任务
         new GetVcodeTask().execute();
     }
+	
+	public void onSelAccButtonClicked(View v){
+		if(unames.size()==0){
+			Toast.makeText(this,"没有记录",0).show();
+			return;
+		}
+		String[] accs=new String[unames.size()+1];
+		for(int i=0;i<accs.length-1;i++){
+			accs[i]=unames.get(i);
+		}
+		accs[accs.length-1]="删除...";
+		AlertDialog ad=new AlertDialog.Builder(this)
+			.setItems(accs,new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface p1,int p2){
+					try{
+					if(p2>=unames.size()){
+						String[] accs=new String[unames.size()];
+						for(int i=0;i<accs.length;i++){
+							accs[i]=unames.get(i);
+						}
+						AlertDialog ad=new AlertDialog.Builder(MainActivity.this)
+							.setMultiChoiceItems(accs,null,new DialogInterface.OnMultiChoiceClickListener(){
+								@Override
+								public void onClick(DialogInterface p1,int p2,boolean p3){
+									if(dellist==null)dellist=new ArrayList<Integer>();
+									if(p3){
+										if(-1==dellist.indexOf(p2)) dellist.add(p2);
+									}else{
+										dellist.remove(dellist.indexOf(p2));
+									}
+								}
+							})
+							.setPositiveButton("删除",new DialogInterface.OnClickListener(){
+								@Override
+								public void onClick(DialogInterface p1,int p2){
+									for(int i:dellist){
+										unames.remove(i);
+										passwds.remove(i);
+									}
+									dellist.clear();
+									Utils.saveLoginInfos(sp,unames,passwds);
+								}
+							})
+							.create();
+							ad.show();
+							return;
+					}
+					etUname.setText(unames.get(p2));
+					etPasswd.setText(passwds.get(p2));
+					etPasswd.setInputType(129);
+					}catch(Exception e){
+						log(e);
+					}
+				}
+			})
+			.setTitle("选择账号")
+			.create();
+			ad.show();
+	}
 
     public void onClearEtsButtonClicked(View v){
         etUname.setText("");
@@ -201,7 +264,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override//后处理，重新允许使用按钮
         protected void onPostExecute(String result){
-            Intent i = new Intent(MainActivity.this,CourseListActivity.class);
             MainActivity.this.ibVcode.setEnabled(true);
             MainActivity.this.tvGetVcode.setEnabled(true);
             MainActivity.this.btnLogin.setEnabled(true);
@@ -237,7 +299,9 @@ public class MainActivity extends AppCompatActivity {
 			catch(Exception e){
 				log(e);
 			}
-            startActivity(i);
+            startActivity(
+			new Intent(MainActivity.this,CourseListActivity.class)
+			.putExtra("homepage",result));
             finish();
         }
 
