@@ -37,6 +37,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class MainActivity extends AppCompatActivity {
     //
@@ -72,6 +74,26 @@ public class MainActivity extends AppCompatActivity {
             showError(R.string.prelogerr_name);
             return;
         }
+		//测试入口，将使用本地网页模拟
+		if(uname.equals("2012")){
+			try{
+				InputStream is=getAssets().open("homepage.html");
+				InputStreamReader ir=new InputStreamReader(is);
+				StringBuilder sb=new StringBuilder();
+				int len;char[] buf=new char[0x1000];
+				while((len=ir.read(buf))>0){
+					sb.append(buf,0,len);
+				}
+				ir.close();
+				startActivity(new Intent(this,CourseListActivity.class)
+				.putExtra("homepage",sb.toString())
+				.putExtra("cookies",""));
+				return;
+			}catch(Exception e){
+				log(e);
+				return;
+			}
+		}
         if(passwd.length()==0){
             showError(R.string.prelogerr_pass);
             return;
@@ -214,7 +236,8 @@ public class MainActivity extends AppCompatActivity {
             etPasswd.setText(passwds.get(0));
         }
 
-
+		//
+		log("使用测试账号2012(无密码)登录将使用apk里的网页模拟测试");
     }
 
     //打印一条消息，在调试用的显示框
@@ -302,9 +325,25 @@ public class MainActivity extends AppCompatActivity {
 			catch(Exception e){ 
 				log(e); 
 			} 
+			StringBuilder sb=new StringBuilder();
+			for(Cookie cooo:cookieso){
+				sb.append(cooo.name()).append("=")
+					.append(cooo.value()).append("=")
+					.append(cooo.domain()).append("=")
+					.append(cooo.path()).append("=")
+					.append(cooo.expiresAt()).append("\n");
+			}
+			for(Cookie cooo:cookiesp){
+				sb.append(cooo.name()).append("=")
+				.append(cooo.value()).append("=")
+				.append(cooo.domain()).append("=")
+				.append(cooo.path()).append("=")
+				.append(cooo.expiresAt()).append("\n");
+			}sb.deleteCharAt(sb.length()-1);
             startActivity( 
 			new Intent(MainActivity.this,CourseListActivity.class) 
-			.putExtra("homepage",result)); 
+			.putExtra("homepage",result)
+			.putExtra("cookies",sb.toString())); 
             finish(); 
         } 
 

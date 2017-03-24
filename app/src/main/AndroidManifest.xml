@@ -19,6 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".UI.CourseListActivity"></activity>
+		<activity android:name=".UI.CourseActivity"></activity>
     </application>
 
 </manifest>
