@@ -1,4 +1,4 @@
-package b513.bjutpe.UI;
+package b513.bjutpe;
 
 import android.content.Intent;
 import android.os.Bundle;
