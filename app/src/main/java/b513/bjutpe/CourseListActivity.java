@@ -33,7 +33,7 @@ public class CourseListActivity extends AppCompatActivity {
 		logger=Logger.getInstance(this,getFilesDir());
 		try{
 			//从Intent里拿到MainActivity传过来的网页
-			Document doc=Jsoup.parse(getIntent().getStringExtra("homepage"));
+			Document doc=Jsoup.parse(getIntent().getStringExtra(Constants.INTENT_EXTRA_HOMEPAGE));
 			Element list=doc.getElementById("CourseList");
 			urls=new String[list.children().size()-1];
 			List<Map<String, Object>> maps = new ArrayList<Map<String, Object>>();
@@ -48,15 +48,15 @@ public class CourseListActivity extends AppCompatActivity {
 			}
 			ListView lv= (ListView) findViewById(R.id.course_lvCourse);
 			SimpleAdapter adapter = new SimpleAdapter(this, maps, R.layout.item_courselist,
-													  new String[]{"item_courseName", "item_teacher"},
+													  new String[]{MAP_KEY_COURSE, MAP_KEY_TEACHER},
 													  new int[]{R.id.item_courseName, R.id.item_teacher});
 			lv.setAdapter(adapter);
 			lv.setOnItemClickListener(new ListView.OnItemClickListener(){
 					@Override
 					public void onItemClick(AdapterView<?> p1,View p2,int p3,long p4){
 							startActivity(new Intent(CourseListActivity.this,CourseActivity.class)
-						.putExtra("url",urls[p3])
-						.putExtra("cookies",getIntent().getStringExtra("cookies")));
+						.putExtra(Constants.INTENT_EXTRA_URL,urls[p3])
+						.putExtra(Constants.INTENT_EXTRA_COOKIES,getIntent().getStringExtra(Constants.INTENT_EXTRA_COOKIES)));
 					}
 				});
 		}catch(Exception e){

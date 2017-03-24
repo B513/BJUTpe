@@ -13,5 +13,10 @@
 	<string name="prelogerr_name">请填写用户名</string>
 	<string name="prelogerr_pass">请填写咪码</string>
 	<string name="prelogerr_veri">请填写验证码</string>
+	<string name="welcome">欢迎您，可爱的%1$s~</string>
+	<string name="chooseaccount">选择账号</string>
+	<string name="deleaccount">删除...</string>
+	<string name="deleaccconfirm">删除</string>
+	<string name="accnorecord">没有记录</string>
 
 </resources>

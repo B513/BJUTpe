@@ -75,9 +75,9 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 		//测试入口，将使用本地网页模拟
-		if(uname.equals("2012")){
+		if(uname.equals(Constants.TEST_UNAME)){
 			try{
-				InputStream is=getAssets().open("homepage.html");
+				InputStream is=getAssets().open(Constants.TEST_ASSETFN_HOMEPAGE);
 				InputStreamReader ir=new InputStreamReader(is);
 				StringBuilder sb=new StringBuilder();
 				int len;char[] buf=new char[0x1000];
@@ -86,8 +86,9 @@ public class MainActivity extends AppCompatActivity {
 				}
 				ir.close();
 				startActivity(new Intent(this,CourseListActivity.class)
-				.putExtra("homepage",sb.toString())
-				.putExtra("cookies",""));
+				.putExtra(Constants.INTENT_EXTRA_HOMEPAGE,sb.toString())
+				.putExtra(Constants.INTENT_EXTRA_COOKIES,"")
+				.putExtra(Constants.TEST_INTENT_ISTEST,true));
 				return;
 			}catch(Exception e){
 				log(e);
@@ -125,14 +126,14 @@ public class MainActivity extends AppCompatActivity {
 	
 	public void onSelAccButtonClicked(View v){
 		if(unames.size()==0){
-			Toast.makeText(this,"没有记录",0).show();
+			Toast.makeText(this,R.string.accnorecord,0).show();
 			return;
 		}
 		String[] accs=new String[unames.size()+1];
 		for(int i=0;i<accs.length-1;i++){
 			accs[i]=unames.get(i);
 		}
-		accs[accs.length-1]="删除...";
+		accs[accs.length-1]=getString(R.string.deleaccount);;
 		AlertDialog ad=new AlertDialog.Builder(this)
 			.setItems(accs,new DialogInterface.OnClickListener(){
 				@Override
@@ -155,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
 									}
 								}
 							})
-							.setPositiveButton("删除",new DialogInterface.OnClickListener(){
+							.setPositiveButton(R.string.deleaccconfirm,new DialogInterface.OnClickListener(){
 								@Override
 								public void onClick(DialogInterface p1,int p2){
 									for(int i:dellist){
@@ -178,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
 					}
 				}
 			})
-			.setTitle("选择账号")
+			.setTitle(R.string.chooseaccount)
 			.create();
 			ad.show();
 	}
@@ -317,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
 				int ind0=s0.indexOf("当前用户：")+5; 
 				if(ind0<s0.length()&&ind0>=0){ 
 					s0=s0.substring(ind0); 
-					Toast.makeText(MainActivity.this,"欢迎您，可爱的"+s0+"~",0).show();
+					Toast.makeText(MainActivity.this,getString(R.string.welcome,s0),0).show();
 				}else{ 
 					//Won't happen 
 				} 
@@ -342,9 +343,10 @@ public class MainActivity extends AppCompatActivity {
 			}sb.deleteCharAt(sb.length()-1);
             startActivity( 
 			new Intent(MainActivity.this,CourseListActivity.class) 
-			.putExtra("homepage",result)
-			.putExtra("cookies",sb.toString())); 
-            finish(); 
+			.putExtra(Constants.INTENT_EXTRA_HOMEPAGE,result)
+			.putExtra(Constants.INTENT_EXTRA_COOKIES,sb.toString())
+            .putExtra(Constants.TEST_INTENT_ISTEST,false));
+			finish(); 
         } 
 
         @Override//在后台登录
